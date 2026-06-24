@@ -65,26 +65,37 @@ public class McpServerApp {
     }
 
     private static String fetchRepoInfo(String owner, String repo) {
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.github.com/repos/" + owner + "/" + repo))
-                    .header("Accept", "application/vnd.github+json")
-                    .build();
+    try {
+        String url = "https://api.github.com/repos/" + owner + "/" + repo;
+        System.err.println("DEBUG: Calling URL -> " + url);
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Accept", "application/vnd.github+json")
+                .header("User-Agent", "java-mcp-server")
+                .build();
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode json = mapper.readTree(response.body());
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            return "Repo: " + json.path("full_name").asText()
-                    + "\nDescription: " + json.path("description").asText()
-                    + "\nStars: " + json.path("stargazers_count").asInt()
-                    + "\nForks: " + json.path("forks_count").asInt()
-                    + "\nLanguage: " + json.path("language").asText();
+        System.err.println("DEBUG: Status code -> " + response.statusCode());
+        System.err.println("DEBUG: Raw body -> " + response.body());
 
-        } catch (Exception e) {
-            return "Error fetching repo info: " + e.getMessage();
+        if (response.statusCode() != 200) {
+            return "GitHub API returned status " + response.statusCode() + ": " + response.body();
         }
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode json = mapper.readTree(response.body());
+
+        return "Repo: " + json.path("full_name").asText()
+                + "\nDescription: " + json.path("description").asText()
+                + "\nStars: " + json.path("stargazers_count").asInt()
+                + "\nForks: " + json.path("forks_count").asInt()
+                + "\nLanguage: " + json.path("language").asText();
+
+    } catch (Exception e) {
+        return "Error fetching repo info: " + e.getMessage();
     }
+}
 }
