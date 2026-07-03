@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class GitHubTool {
 
+    @SuppressWarnings("deprecation")
     public static McpServerFeatures.SyncToolSpecification build(McpJsonMapper jsonMapper) {
 
         McpSchema.Tool toolDef = McpSchema.Tool.builder()
@@ -36,12 +37,12 @@ public class GitHubTool {
                 toolDef,
                 (exchange, arguments) -> {
                     String owner = (String) arguments.get("owner");
-                    String repo = (String) arguments.get("repo");
+                    String repo  = (String) arguments.get("repo");
                     String result = fetchRepoInfo(owner, repo);
-                    return McpSchema.CallToolResult.builder()
-                        .content(List.of(new McpSchema.TextContent(result)))
-                        .isError(false)
-                        .build();
+                    return new McpSchema.CallToolResult(
+                            List.of(new McpSchema.TextContent(result)),
+                            false
+                    );
                 }
         );
     }
@@ -66,11 +67,11 @@ public class GitHubTool {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(response.body());
 
-            return "Repo: " + json.path("full_name").asText()
-                    + "\nDescription: " + json.path("description").asText()
-                    + "\nStars: " + json.path("stargazers_count").asInt()
-                    + "\nForks: " + json.path("forks_count").asInt()
-                    + "\nLanguage: " + json.path("language").asText();
+            return "Repo: "        + json.path("full_name").asText()
+                + "\nDescription: " + json.path("description").asText()
+                + "\nStars: "       + json.path("stargazers_count").asInt()
+                + "\nForks: "       + json.path("forks_count").asInt()
+                + "\nLanguage: "    + json.path("language").asText();
 
         } catch (Exception e) {
             return "Error fetching repo info: " + e.getMessage();
