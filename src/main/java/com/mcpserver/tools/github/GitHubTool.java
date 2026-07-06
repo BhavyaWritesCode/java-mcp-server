@@ -1,4 +1,4 @@
-package com.mcpserver.tools;
+package com.mcpserver.tools.github;
 
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
