@@ -35,7 +35,7 @@ All tool calls are automatically logged to a `tool_call_logs` table in your MySQ
 ### 1. Pull the image
  
 ```bash
-docker pull bhavyawritescode/java-mcp-server
+docker pull bhavya06s/java-mcp-server
 ```
  
 ### 2. Pull sandbox images (required for code execution)
@@ -84,7 +84,7 @@ Add the following to your `claude_desktop_config.json`:
         "-e", "DB_PASSWORD",
         "-e", "GITHUB_TOKEN",
         "-v", "/var/run/docker.sock:/var/run/docker.sock",
-        "bhavyawritescode/java-mcp-server"
+        "bhavya06s/java-mcp-server"
       ],
       "env": {
         "DB_URL": "jdbc:mysql://host.docker.internal:3306/yourdb",
